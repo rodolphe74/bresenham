@@ -97,7 +97,7 @@ END IF
 SLEEP
 ```
 
-## Comment coder le DRAWXY sur un TO8 ?
+## Comment coder le DRAWXY en assembleur sur un TO8 ?
 Il faut savoir que :
 - le bit 0 de l'octet &HE7C3 permet de commuter le mode forme/couleur de la mémoire écran, lorsqu'il est à 1, le contrôleur vidéo est en mode forme.
 - la mémoire vidéo commence à l'adresse &H4000 sur 8000 octets
