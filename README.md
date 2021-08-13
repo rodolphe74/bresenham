@@ -105,6 +105,7 @@ Il faut savoir que :
 - le bit 0 de l'octet &HE7C3 permet de commuter le mode forme/couleur de la mémoire écran, lorsqu'il est à 1, le contrôleur vidéo est en mode forme. Il affiche donc des pixels lorsqu'on écrit des valeurs entre &H4000 et &H5F40.
 - la mémoire vidéo commence à l'adresse &H4000 sur 8000 octets
 - en mode forme, l'écran est divisé en 25 lignes de 40x8 colonnes soit 320x200 pixels.
+
 Pour tracer un point il faut:
 - activer le mode forme du controleur vidéo.
 - calculer l'adresse du bloc de 8 pixels correspondant aux coordonnées (x,y).
