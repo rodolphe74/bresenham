@@ -10,8 +10,8 @@ Cet algorithme permet de tracer des lignes en utilisant uniquement des nombres e
 Pour le tester, il faut un ordinateur 8 bits avec ce processeur. Nous choisirons le [Thomson TO8](https://fr.wikipedia.org/wiki/Thomson_TO8).
 
 # Fonctionnement
-Le principe de l'algo est de trouver les points les plus proche de l'equation de droite formée par les coordonnées en entrées (X0,Y0)-(X1,Y1).
-A chaque itération, une coordonnée (x,y) est calculée est les pixels correspondants sont allumés.
+Le principe de l'algo est de trouver les points les plus proches de l'équation de droite formée par les coordonnées en entrées (X0,Y0)-(X1,Y1).
+A chaque itération, une coordonnée (x,y) est calculée et le pixel correspondant est allumé.
 
 Dans un premier temps, le plus simple est une implémentation en Basic façon assembleur ; en utilisant des variables globales et des sous procédures.
   
