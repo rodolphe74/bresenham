@@ -1,0 +1,589 @@
+(main)MAIN.ASM   			* Marquage du programme principal
+
+START			
+	ORG	$7D00
+
+	* LDX #PARAMDATA
+	* LDD #0
+	* STD ,X++
+	* LDD #0
+	* STD ,X++
+	* LDD #319
+	* STD ,X++
+	* LDD #199
+	* STD,X
+	* JSR LINE
+	
+	LDX #PARAMDATA
+	LDD #0
+	STD ,X++
+	LDD #0
+	STD ,X++
+	LDD #319
+	STD ,X++
+	LDD #199
+	STD,X
+	JSR LINE
+	
+	LDX #PARAMDATA
+	LDD #319
+	STD ,X++
+	LDD #0
+	STD ,X++
+	LDD #0
+	STD ,X++
+	LDD #199
+	STD,X
+	JSR LINE
+	
+	
+	* LDX #PARAMDATA
+	* LDD #150
+	* STD ,X++
+	* LDD #199
+	* STD ,X++
+	* LDD #162
+	* STD ,X++
+	* LDD #10
+	* STD,X
+	* JSR LINE
+	
+	* LDX #PARAMDATA
+	* LDD #162
+	* STD ,X++
+	* LDD #0
+	* STD ,X++
+	* LDD #150
+	* STD ,X++
+	* LDD #199
+	* STD,X
+	* JSR LINE
+	
+	* LDX #PARAMDATA
+	* LDD #150
+	* STD ,X++
+	* LDD #0
+	* STD ,X++
+	* LDD #162
+	* STD ,X++
+	* LDD #199
+	* STD,X
+	* JSR LINE
+
+	RTS
+
+	
+LINE
+	JSR DRAWFORME			* positionne le mode forme thomson
+	
+	LDD #1
+	STD VARYI
+	STD VARXI
+
+
+* Mode high ou low ?
+	LDX #PARAMDATA
+	LEAX 4,X
+	LDD ,X					* X1 dans reg D
+	LDX #PARAMDATA			* X0 dans reg X
+	SUBD ,X					* X1-X0 dans reg D
+	CMPD #0					* reg D >= 0 ?
+	BGE X1MOINSX0POS
+	COMA					* calcul de la valeur abs si neg
+	COMB
+	ADDD #1
+X1MOINSX0POS
+	STD TEMP				* garde le resultat pour utilisation ulterieure
+	LDX #PARAMDATA
+	LEAX 6,X
+	LDD ,X					* Y1 dans reg D
+	LDX #PARAMDATA			
+	LEAX 2,X				* Y0 dans reg X
+	SUBD ,X					* Y1-Y0 dans reg D
+	CMPD #0					* reg D < 0
+	BGE Y1MOINSY0POS
+	COMA					* calcul de la valeur abs si neg
+	COMB
+	ADDD #1
+Y1MOINSY0POS
+	SUBD TEMP
+	STD VARHL				* sauvegarde HL=abs(Y1-Y0)-abs(X1-X0)
+	
+	
+
+
+
+
+*  HL<0 -> X++
+	LDY VARHL
+	CMPY #0
+	BGE HLPOSITIF
+
+
+* X0 > X1 ?
+	LDD PARAMDATA
+	LDX #PARAMDATA
+	LEAX 4,X
+	SUBD ,X					* reg D = X0-X1
+	CMPD #0
+	BLT X0INFX1
+	JSR SWAPCOORDS			* X0>X1
+X0INFX1
+	
+	JSR DX_AND_DY			* calcul DX et DY
+
+*  DY<0 ?
+	LDD VARDY
+	CMPD #0
+	BGE DYPOSITIF
+	LDD #-1					* DY<0
+	STD VARYI				* YI=-1
+	LDD #0
+	SUBD VARDY
+	STD VARDY				* DY=-DY
+DYPOSITIF
+
+* X=X0
+	LDD PARAMDATA
+	STD VARX
+	
+* Y=Y0
+	LDX #PARAMDATA
+	LEAX 2,X
+	LDD ,X
+	STD VARY
+	
+* P=2*DY-DX
+	LDD VARDY
+	LDX #VARDY
+	ADDD ,X					* reg D = 2 * DY
+	LDX #VARDX
+	SUBD ,X					* reg D = (2 * DY) - DX
+	STD VARP
+
+* Tant que X<X1
+	LDD VARX
+	LDX #PARAMDATA
+	LEAX 4,X				* reg X = X1	
+LOOP_X
+	JSR COMPAREP_Y
+	ADDD #1					* D++
+	STD VARX
+	CMPD ,X					* IF X >= X1 THEN EXIT
+	BLT LOOP_X				* (reg D - reg X < 0 ? LOOP : ENDLOOP)
+	JMP FIN
+	
+	
+
+* HL>0 -> Y++
+HLPOSITIF
+
+* Y0 > Y1 ?
+	LDX #PARAMDATA
+	LEAX 2,X
+	LDD ,X
+	LDX #PARAMDATA
+	LEAX 6,X
+	SUBD ,X					* reg D = Y0-Y1
+	CMPD #0
+	BLT Y0INFY1
+	JSR SWAPCOORDS			* X0>X1
+Y0INFY1
+
+	JSR DX_AND_DY			* calcul DX et DY
+
+*  DX<0 ?
+	LDD VARDX
+	CMPD #0
+	BGE DXPOSITIF
+	LDD #-1					* DY<0
+	STD VARXI				* YI=-1
+	LDD #0
+	SUBD VARDX
+	STD VARDX				* DY=-DY
+DXPOSITIF
+
+* X=X0
+	LDD PARAMDATA
+	STD VARX
+	
+* Y=Y0
+	LDX #PARAMDATA
+	LEAX 2,X
+	LDD ,X
+	STD VARY
+
+* P=2*DX-DY
+	LDD VARDX
+	LDX #VARDX
+	ADDD ,X					* reg D = 2 * DX
+	LDX #VARDY
+	SUBD ,X					* reg D = (2 * DX) - DY
+	STD VARP
+
+	* Tant que Y<Y1
+	LDD VARY
+	LDX #PARAMDATA
+	LEAX 6,X				* reg X = Y1
+LOOP_Y
+	JSR COMPAREP_X
+	ADDD #1					* D++
+	STD VARY
+	CMPD ,X					* IF Y >= Y1 THEN EXIT
+	BLT LOOP_Y				* (reg D - reg X < 0 ? LOOP : ENDLOOP)
+	JMP FIN
+	
+	
+FIN
+	RTS
+
+
+
+DX_AND_DY
+	PSHS D,X,Y
+* DX=X1-X0
+	LDX #PARAMDATA			* adresse X0 dans reg X
+	LEAX 4,X				* (+2) adresse X1 dans reg X
+	LDD ,X					* chargement dans reg D 16b de la valeur pointe par X (=X1)
+	LDY #PARAMDATA			* adresse X0 dans reg Y
+	SUBD ,Y					* reg D = X1-X0
+	STD VARDX
+
+* DY=Y1-Y0
+	LDX #PARAMDATA			* adresse X0 dans reg X
+	LEAX 6,X				* (+3) adresse Y1 dans reg X
+	LDD ,X					* chargement dans reg D 16b de la valeur pointe par X (=Y1)
+	LDY #PARAMDATA			* adresse X0 dans reg Y
+	LEAY 2,Y				* (+1) adresse Y0 dans reg Y
+	SUBD ,Y					* reg D = Y1-Y0
+	STD VARDY
+	PULS Y,X,D
+	RTS
+
+
+
+
+INCY						* Y+=YI
+	PSHS D
+	PSHS X
+	LDD VARY
+	ADDD VARYI
+	STD VARY
+	PULS X
+	PULS D
+	RTS
+
+
+COMPAREP_Y
+	PSHS D
+	PSHS X
+	LDD VARP
+	CMPD #0
+	BGE CALL_UPDATE_P1_Y			* reg D >= 0 ?
+	BLT CALL_UPDATE_P2_Y			* reg D < 0 ?
+CALL_UPDATE_P1_Y
+	JSR DRAWXY
+	JSR UPDATE_P1_Y
+	JMP AFTER_UPDATE
+CALL_UPDATE_P2_Y
+	JSR DRAWXY
+	JSR UPDATE_P2_Y
+AFTER_UPDATE
+	PULS X
+	PULS D
+	RTS
+	
+
+UPDATE_P1_Y				* P=P+2*DY-2*DX
+	PSHS D
+	PSHS X
+	JSR INCY				* Y+=YI
+	JSR UPDATE_P2_Y		* P=P+2*DY
+	LDD VARP
+	LDX #VARDX
+	SUBD ,X					* reg D = P-DX
+	LDX	#VARDX
+	SUBD ,X					* reg D = P-2*DX
+	STD VARP				* P = reg D
+	PULS X
+	PULS D
+	RTS
+
+
+UPDATE_P2_Y				* P=P+2*DY
+	PSHS D
+	PSHS X
+	LDD VARDY
+	LDX #VARDY
+	ADDD ,X					* reg D = 2*DY
+	LDX #VARP
+	ADDD ,X					* reg D = 2*DY+P
+	STD VARP				* P = 2*DY+P
+	PULS X
+	PULS D
+	RTS
+
+
+
+
+
+
+
+INCX						* X+=XI
+	PSHS D
+	PSHS X
+	LDD VARX
+	ADDD VARXI
+	STD VARX
+	PULS X
+	PULS D
+	RTS
+
+
+COMPAREP_X
+	PSHS D
+	PSHS X
+	LDD VARP
+	CMPD #0
+	BGE CALL_UPDATE_P1_X			* reg D >= 0 ?
+	BLT CALL_UPDATE_P2_X			* reg D < 0 ?
+CALL_UPDATE_P1_X
+	JSR DRAWXY
+	JSR UPDATE_P1_X
+	JMP AFTER_UPDATE_X
+CALL_UPDATE_P2_X
+	JSR DRAWXY
+	JSR UPDATE_P2_X
+AFTER_UPDATE_X
+	PULS X
+	PULS D
+	RTS
+
+
+UPDATE_P1_X				* P=P+2*DY-2*DX
+	PSHS D
+	PSHS X
+	JSR INCX				* X+=XI
+	JSR UPDATE_P2_X		* P=P+2*DX
+	LDD VARP
+	LDX #VARDY
+	SUBD ,X					* reg D = P-DY
+	LDX	#VARDY
+	SUBD ,X					* reg D = P-2*DY
+	STD VARP				* P = reg D
+	PULS X
+	PULS D
+	RTS
+
+
+UPDATE_P2_X				* P=P+2*DX
+	PSHS D
+	PSHS X
+	LDD VARDX
+	LDX #VARDX
+	ADDD ,X					* reg D = 2*DX
+	LDX #VARP
+	ADDD ,X					* reg D = 2*DX+P
+	STD VARP				* P = 2*DY+P
+	PULS X
+	PULS D
+	RTS
+
+
+
+
+INCVARDIVQ
+	PSHS D
+	PSHS X
+	LDD VARDIVQ
+	ADDD #1
+	STD VARDIVQ
+	PULS X
+	PULS D
+	RTS
+
+DIVIDE
+	PSHS D
+	PSHS X
+	LDD #0
+	STD VARDIVQ
+	LDD VARDIVNUM
+	STD VARDIVR
+* Tant que VARDIVR >= VARDIVDEN
+	LDD VARDIVR
+	LDX #VARDIVDEN			* reg X = VARDIVDEN
+LOOPDIV
+	JSR INCVARDIVQ			* INC quotient
+	SUBD ,X					* VARDIVR -= VARDIVDEN
+	CMPD ,X					* IF VARDIVR >= VARDIVDEN
+	BGE LOOPDIV			* LOOPDIV
+	STD VARDIVR			* reste
+	PULS X
+	PULS D
+	RTS
+
+
+DIV_BY_TWO					* division par 2 avec shift right
+	LSRB
+	LSRA
+	BCC SUITE				* C = 0 ? SUITE : CINB
+CINB
+	ORB #128				* BIT C au niveau du bit 7 de reg B
+SUITE
+	RTS
+
+DIV_BY_EIGHT				* division par 8 avec shift
+	PSHS D
+	PSHS X
+	LDD VARDIVNUM			* numerateur dans reg D
+	JSR DIV_BY_TWO
+	JSR DIV_BY_TWO
+	JSR DIV_BY_TWO
+	STD VARDIVQ			* finalement le quotient est dans reg B (q < 256)
+	LDA #8					* calcul du reste
+	MUL
+	STD VARMULQ			* 8*q dans VARMULQ
+	LDD VARDIVNUM			* numerateur dans reg D
+	SUBD VARMULQ
+	STD VARDIVR			* reste dans VARDIVR
+	PULS X
+	PULS D
+	RTS
+	
+
+
+
+SWAPCOORDS					* permute les coordonnees
+	LDD PARAMDATA			* X0 dans reg D
+	LDX #PARAMDATA			* adresse PARAMDATA dans reg X
+	LEAX 4,X				* adresse X1 dans reg X
+	LDY ,X					* X1 dans reg Y
+	LDX #PARAMDATA
+	STY ,X
+	LEAX 4,X				* adresse X1 dans reg X
+	STD ,X					* ici X0 et X1 sont permutes
+	LDX #PARAMDATA
+	LEAX 2,X
+	LDD ,X					* Y0 dans reg D
+	LDX #PARAMDATA
+	LEAX 6,X
+	LDY ,X					* Y1 dans reg Y
+	STD ,X
+	LEAX -4,X
+	STY ,X					* ici Y0 et Y1 sont permutes
+	RTS 
+
+
+
+DRAWFORME
+* passage en mode forme
+	PSHS X
+	LDX COMMUTATEUR
+	LDA ,X
+	ORA #1
+	STA ,X
+	PULS X
+	RTS
+
+
+DRAWXY
+	PSHS D
+	PSHS X
+* calcul de l'adresse ecran : V=INT(X/8)+Y*40+&H4000
+	LDD VARX
+	STD VARDIVNUM
+*	LDD #8					
+*	STD VARDIVDEN
+*	JSR DIVIDE				* quotient dans VARDIVQ - reste dans VARDIVR (version lente)
+	JSR DIV_BY_EIGHT		* quotient dans VARDIVQ - reste dans VARDIVR (version optimisee)
+	LDD VARY
+	LDA #40
+	MUL						* Y*40 dans reg D (Y < 200 : tient dans B)
+	LDX #VARDIVQ
+	ADDD ,X					* X/8 + Y*40 dans reg D
+	LDX #BASESCRADDR		* base ecran TO
+	ADDD ,X					* base ecran TO + X/8 + Y*40 dans reg D
+	STD SCRADDR			* sauvegarde adresse
+	LDX SCRADDR			* adresse dans X
+
+	LDY #PXDATA
+	LDD VARDIVR			* reste div 8 dans D donc dans B
+	EXG A,B					* reste div 8 dans A
+	LEAY A,Y				* decalage du reste de la div dans Y
+	LDB ,Y					* valeur adresse Y dans B
+	STB ORVAL				* sauvegarde de B
+	LDA ,X					* memoire courante dans reg A
+	ORA ORVAL				* normalement c'est bon dans A
+	STA ,X					* ecriture memoire ecran
+	PULS X
+	PULS D
+	RTS
+
+
+	
+PUTCH	EQU		$E803
+
+
+
+
+PXDATA
+    FCB 128,64,32,16,8,4,2,1
+	
+ORVAL
+	FCB 0
+
+PARAMDATA
+	FDB 0,0,0,0		* X0 Y0 X1 Y1
+	
+VARX
+	FDB 0
+
+VARY
+	FDB 0
+	
+VARDX
+	FDB 0
+	
+VARDY
+	FDB 0
+
+VARXI
+	FDB 1
+	
+VARYI
+	FDB 1
+	
+VARMULQ
+	FDB 0
+
+VARP
+	FDB 0
+	
+VARHL
+	FDB 0
+	
+VARDIVNUM					* numerateur division
+	FDB 0
+	
+VARDIVDEN					* denominateur division
+	FDB 0
+
+VARDIVQ					* quotient division
+	FDB 0
+	
+VARDIVR					* reste division
+	FDB 0
+	
+SCRADDR
+	FDB 0
+
+BASESCRADDR
+	FDB $4000
+
+COMMUTATEUR
+	FDB $E7C3				* bit 0 a 1 pour passer en mode forme
+	
+TEMP
+	FDB 0
+	
+END
