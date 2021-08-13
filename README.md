@@ -13,6 +13,6 @@ A chaque itération, une coordonnée (x,y) est calculée est les pixels correspo
 
 Dans un premier temps, le plus simple était une implémentation Basic façon assembleur ; en utilisant des variables globales et des sous procédures.
   
-'''
+```
 dsqdqs
-'''
+```
