@@ -226,6 +226,17 @@ DIV_BY_EIGHT                * division par 8 avec shift
     STD VARDIVR             * reste dans VARDIVR
     PULS X
     PULS D
-    RTS    
+    RTS
+
+VARMULQ
+    FDB 0
+
+VARDIVNUM                   * dividende division
+    FDB 0
+
+VARDIVQ                     * quotient division
+    FDB 0
+    
+VARDIVR                     * reste division
 ```
 
