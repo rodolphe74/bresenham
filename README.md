@@ -108,7 +108,7 @@ Il faut savoir que :
 
 Pour tracer un point il faut:
 - activer le mode forme du controleur vidéo.
-- calculer l'adresse du bloc de 8 pixels correspondant aux coordonnées (x,y).
+- calculer l'adresse du bloc de 8 pixels correspondant aux coordonnées (x,y) souhaitées.
 - rechercher la valeur de l'octet correspondant au pixel dans le bloc de 8 (c'est facile, c'est le reste R de la division par 8 de la coordonnées X, puis on fait 2^R pour connaitre la valeur de l'octet).
 - faire un OR avec le bloc de 8 pixels existant à cette adresse afin de ne pas effacer les pixels déjà allumés.
 
