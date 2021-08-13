@@ -12,6 +12,6 @@ Le principe de l'algo est de trouver les points les plus proche de l'equation de
 A chaque itération, une coordonnée (x,y) est calculée est les pixels correspondants sont allumés.
 
 Dans un premier temps, le plus simple était une implémentation Basic façon assembleur ; en utilisant des variables globales et des sous procédures.
-
+  '''
   dsqdqs
-  
+  '''
