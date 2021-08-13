@@ -185,3 +185,14 @@ VARDIVR
 VARDIVQ
     FDB 0
 ```
+
+## Comment faire une division par 8 en assembleur 6809
+Le 6809 est un micro processeur 8 bits plutôt évolué. Il possède par exemple une instruction de multiplication (rareté à l'époque), mais en ce qui concerne la division, il est nécessaire de l'implémenter soi même. Il existe de nombreux algorithme pour cela, le plus simple (et le plus lent) étant une boucle d'addition du diviseur jusqu'à arriver au dividende.
+
+Dans notre cas, nous avons juste besoin de faire une division par 8. Dans le système binaire, la [division par 2](https://en.wikipedia.org/wiki/Division_by_two) peut être calculée avec un simple décalage de bit. C'est bien plus rapide. Pour faire une division par 8, il suffit de faire 3 décalages. On utilise ensuite l'instruction MUL pour calculer le reste.
+
+Par exemple 542/8
+```
+Q = 542>>3 = 180
+R = 542 - (180 MUL 3) = 2
+```
