@@ -187,12 +187,45 @@ VARDIVQ
 ```
 
 ## Comment faire une division par 8 en assembleur 6809
-Le 6809 est un micro processeur 8 bits plutôt évolué. Il possède par exemple une instruction de multiplication (rareté à l'époque). Mais en ce qui concerne la division, il est nécessaire de l'implémenter soi même. Il existe de nombreux algorithme pour cela, le plus simple (et le plus lent) étant une boucle d'addition du diviseur jusqu'à arriver au dividende.
+Le 6809 est un micro processeur 8 bits plutôt évolué. Il possède par exemple une instruction de multiplication (rareté à l'époque). Mais en ce qui concerne la division, il est nécessaire de l'implémenter soi même. Il existe de nombreux algorithmes pour cela, le plus simple (et le plus lent) étant une boucle d'addition du diviseur jusqu'à arriver au dividende.
 
 Dans notre cas, nous avons juste besoin de faire une division par 8. Dans le système binaire, la [division par 2](https://en.wikipedia.org/wiki/Division_by_two) peut être calculée avec un simple décalage de bit. C'est bien plus rapide. Pour faire une division par 8, il suffit de faire 3 décalages. On utilise ensuite l'instruction MUL pour calculer le reste.
 
 Par exemple 542/8
+
 ```
-Q = 542>>3 = 180
-R = 542 - (180 MUL 3) = 2
+Q = 542>>3 = 001000011110 >> 3 = 000001000011 = 67
+R = 542 - (67 MUL 8) = 542 - 536 = 6
 ```
+
+En assembleur 6809:
+
+```
+DIV_BY_TWO                  * division par 2 avec shift right
+    LSRB
+    LSRA
+    BCC SUITE               * C = 0 ? SUITE : CINB
+CINB
+    ORB #128                * BIT C au niveau du bit 7 de reg B
+SUITE
+    RTS
+
+DIV_BY_EIGHT                * division par 8 avec shift
+    PSHS D
+    PSHS X
+    LDD VARDIVNUM           * numerateur dans reg D
+    JSR DIV_BY_TWO
+    JSR DIV_BY_TWO
+    JSR DIV_BY_TWO
+    STD VARDIVQ             * finalement le quotient est dans reg B (q < 256)
+    LDA #8                  * calcul du reste
+    MUL
+    STD VARMULQ             * 8*q dans VARMULQ
+    LDD VARDIVNUM           * numerateur dans reg D
+    SUBD VARMULQ
+    STD VARDIVR             * reste dans VARDIVR
+    PULS X
+    PULS D
+    RTS    
+```
+
