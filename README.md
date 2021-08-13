@@ -120,39 +120,41 @@ En assembleur 6809, cela donne:
 
 ```
 DRAWXY
-	PSHS D
-	PSHS X
+    PSHS D
+    PSHS X
 * calcul de l'adresse ecran : V=INT(X/8)+Y*40+&H4000
-	LDD VARX
-	STD VARDIVNUM
-	JSR DIV_BY_EIGHT		* quotient dans VARDIVQ - reste dans VARDIVR (version optimisee)
-	LDD VARY
-	LDA #40
-	MUL						* Y*40 dans reg D (Y < 200 : tient dans B)
-	LDX #VARDIVQ
-	ADDD ,X					* X/8 + Y*40 dans reg D
-	LDX #BASESCRADDR		* base ecran TO
-	ADDD ,X					* base ecran TO + X/8 + Y*40 dans reg D
-	STD SCRADDR			* sauvegarde adresse
-	LDX SCRADDR			* adresse dans X
+    LDD VARX
+    STD VARDIVNUM
+    JSR DIV_BY_EIGHT        * quotient dans VARDIVQ - reste dans VARDIVR (version optimisee)
+    LDD VARY
+    LDA #40
+    MUL                     * Y*40 dans reg D (Y < 200 : tient dans B)
+    LDX #VARDIVQ
+    ADDD ,X                 * X/8 + Y*40 dans reg D
+    LDX #BASESCRADDR        * base ecran TO
+    ADDD ,X                 * base ecran TO + X/8 + Y*40 dans reg D
+    STD SCRADDR             * sauvegarde adresse
+    LDX SCRADDR             * adresse dans X
 
-	LDY #PXDATA
-	LDD VARDIVR			* reste div 8 dans D donc dans B
-	EXG A,B					* reste div 8 dans A
-	LEAY A,Y				* decalage du reste de la div dans Y
-	LDB ,Y					* valeur adresse Y dans B
-	STB ORVAL				* sauvegarde de B
-	LDA ,X					* memoire courante dans reg A
-	ORA ORVAL				* normalement c'est bon dans A
-	STA ,X					* ecriture memoire ecran
-	PULS X
-	PULS D
-	RTS
+    LDY #PXDATA
+    LDD VARDIVR             * reste div 8 dans D donc dans B
+    EXG A,B                 * reste div 8 dans A
+    LEAY A,Y                * decalage du reste de la div dans Y
+    LDB ,Y                  * valeur adresse Y dans B
+    STB ORVAL               * sauvegarde de B
+    LDA ,X                  * memoire courante dans reg A
+    ORA ORVAL               * normalement c'est bon dans A
+    STA ,X                  * ecriture memoire ecran
+    PULS X
+    PULS D
+    RTS
   
 PXDATA
-  FCB 128,64,32,16,8,4,2,1
+    FCB 128,64,32,16,8,4,2,1
 BASESCRADDR
-	FDB $4000
+    FDB $4000
 COMMUTATEUR
-	FDB $E7C3				* bit 0 a 1 pour passer en mode forme
+    FDB $E7C3               * bit 0 a 1 pour passer en mode forme
+ORVAL
+    FCB 0
 ```
