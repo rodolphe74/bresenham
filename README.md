@@ -1,7 +1,7 @@
 # Bresenham
 Bresenham line algorithm in 6809 assembly
 
-![dcmoto](Animation.gif)
+![](Animation.gif)
 
 
 Il s'agit d'une implémentation de [l'algorithme de bresenham](https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm) en assembleur 6809.
