@@ -119,6 +119,19 @@ il reste à faire le OR avec l'octet existant à cette adresse
 En assembleur 6809, cela donne:
 
 ```
+    JSR DRAWFORME
+    JSR DRAWXY
+
+DRAWFORME
+* passage en mode forme
+    PSHS X
+    LDX COMMUTATEUR
+    LDA ,X
+    ORA #1
+    STA ,X
+    PULS X
+    RTS
+
 DRAWXY
     PSHS D
     PSHS X
@@ -157,4 +170,12 @@ COMMUTATEUR
     FDB $E7C3               * bit 0 a 1 pour passer en mode forme
 ORVAL
     FCB 0
+VARX
+    FDB 0
+VARY
+    FDB 0
+VARDIVR
+    FDB 0
+VARDIVQ
+    FDB 0
 ```
