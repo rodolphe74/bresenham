@@ -113,4 +113,5 @@ Par exemple, je souhaite allumer le pixel (203,52):
 203/8=25 -> R=3 -> 2^R = 8
 l'octet cible de la mémoire video -> Y*40 + X/8 -> 52*40+25 = 2105
 auquel on ajoute 2^R -> 2105 + 8 = 2113
+il reste à faire le OR avec l'octet existant à cette adresse
 ```
