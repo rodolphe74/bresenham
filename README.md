@@ -5,3 +5,4 @@ Il s'agit d'une implémentation de [l'algorithme de bresenham](https://en.wikipe
 
 Cet algorithme permet de tracer des lignes en utilisant uniquement des nombres entiers. Il convient donc parfaitement au codage en assembleur sur un processeur 8 bits tel que le [motorola 6809](https://fr.wikipedia.org/wiki/Motorola_6809).
 
+Pour le tester, il faut un ordinateur 8 bits avec ce processeur. Nous choisirons le [Thomson TO8](https://fr.wikipedia.org/wiki/Thomson_TO8).
