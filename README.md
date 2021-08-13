@@ -97,6 +97,9 @@ END IF
 SLEEP
 ```
 
+Il ne reste plus qu'à convertir ce programme basic en [assembleur 6809](https://github.com/rodolphe74/bresenham/blob/main/bresenham.ass).
+
+
 ## Comment coder le DRAWXY en assembleur sur un TO8 ?
 Il faut savoir que :
 - le bit 0 de l'octet &HE7C3 permet de commuter le mode forme/couleur de la mémoire écran, lorsqu'il est à 1, le contrôleur vidéo est en mode forme.
