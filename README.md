@@ -11,7 +11,7 @@ Pour le tester, il faut un ordinateur 8 bits avec ce processeur. Nous choisirons
 Le principe de l'algo est de trouver les points les plus proche de l'equation de droite formée par les coordonnées en entrées (X0,Y0)-(X1,Y1).
 A chaque itération, une coordonnée (x,y) est calculée est les pixels correspondants sont allumés.
 
-Dans un premier temps, le plus simple était une implémentation en Basic façon assembleur ; en utilisant des variables globales et des sous procédures.
+Dans un premier temps, le plus simple est une implémentation en Basic façon assembleur ; en utilisant des variables globales et des sous procédures.
   
 ```
 ' 320 X 200 X 8BPP INDEXED COLOR
